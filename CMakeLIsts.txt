@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.18)
+project(tmk_desktop)
+
+find_package(fmt)
+
+add_library(config INTERFACE)
+target_precompile_headers(config INTERFACE
+    config.h
+)
+target_compile_options(config INTERFACE
+    -Wall
+    -Wextra
+)
+target_compile_features(config INTERFACE
+    cxx_std_20
+)
+target_compile_definitions(config INTERFACE
+    ACTIONMAP_ENABLE
+    NKRO_ENABLE
+    NO_DEBUG
+    NO_PRINT
+
+    _CRT_SECURE_NO_WARNINGS
+    WIN32_LEAN_AND_MEAN
+    NOMINMAX
+    UNICODE
+
+    TMK_DESKTOP_ENABLE_LOGGING  # ロギングを有効化する
+    TMK_DESKTOP_FIX_WEAK_MODS  # アクションで定義される修飾キー入力が次のアクションに影響を与えないようにする
+)
+target_include_directories(config INTERFACE
+    ./include
+)
+target_link_libraries(config INTERFACE
+    fmt::fmt-header-only
+)
+
+add_subdirectory(libs)
+add_subdirectory(src)
+add_subdirectory(platform)
