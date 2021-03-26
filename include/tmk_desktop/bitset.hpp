@@ -80,24 +80,23 @@ public:
   }
 
   /**
-   * @brief 任意の型のビット列をコピーする
+   * @brief ビット列をコピーする
    * 
-   * @tparam ValueU ビット列を格納する値の型
    * @param values ビット列を格納する値の配列
    */
-  template <typename ValueU>
-  explicit Bitset(std::span<const ValueU, Bitset<N, ValueU>::VALUE_COUNT> values) noexcept {
-    memcpy(values_.data(), values.data(), std::min(values_.size() * sizeof(ValueT), values.size() * sizeof(ValueU)));
+  constexpr explicit Bitset(std::span<const ValueT, VALUE_COUNT> values) noexcept {
+    for (size_t i = 0; i < VALUE_COUNT; ++i) {
+      values_[i] = values[i];
+    }
   }
 
   /**
-   * @brief 任意の型のビット列をコピーする
+   * @brief ビット列をコピーする
    * 
-   * @tparam ValueU ビット列を格納する値の型
    * @param values ビット列を格納する値の配列
    */
-  template <typename ValueU>
-  explicit Bitset(const ValueU (&values)[Bitset<N, ValueU>::VALUE_COUNT]) noexcept : Bitset(std::span(values)) {}
+  constexpr explicit Bitset(const ValueT (&values)[VALUE_COUNT]) noexcept
+    : Bitset(std::span(values)) {}
 
   /**
    * @brief ビット列を格納する数値列を取得する
@@ -128,6 +127,13 @@ public:
   constexpr bool operator [](const Position& pos) const noexcept {
     if (!pos.is_valid()) return false;
     return !!(values_[pos.row()] & (static_cast<ValueT>(1) << pos.col()));
+  }
+
+  /**
+   * @brief ビット数を取得する
+   */
+  constexpr size_t size() const noexcept {
+    return N;
   }
 
   /**
@@ -192,7 +198,7 @@ public:
   constexpr void scan(Pred pred) const noexcept {
     size_t index = 0;
     for (auto value : values_) {
-      const auto next_index = index + (sizeof(ValueT) * 8);
+      const auto next_index = index + VALUE_WIDTH;
       while (value != 0) {
         if (value & 1) {
           pred(Position{index});
@@ -219,6 +225,28 @@ public:
       result.values_[i] = op(lhs.values_[i], rhs.values_[i]);
     }
     return result;
+  }
+
+  /**
+   * @brief 1から0に変化するビットを抽出する
+   * 
+   * @param prev 以前のビットセット
+   * @param next 今回のビットセット
+   * @return 1から0に変化したビットを1にしたビットセットを返す
+   */
+  friend constexpr Bitset set_to_reset(const Bitset& prev, const Bitset& next) noexcept {
+    return binary_op(prev, next, [] (auto lhs, auto rhs) {return lhs & ~rhs;});
+  }
+
+  /**
+   * @brief 0から1に変化するビットを抽出する
+   * 
+   * @param prev 以前のビットセット
+   * @param next 今回のビットセット
+   * @return 0から1に変化したビットを1にしたビットセットを返す
+   */
+  friend constexpr Bitset reset_to_set(const Bitset& prev, const Bitset& next) noexcept {
+    return set_to_reset(next, prev);
   }
 
 private:

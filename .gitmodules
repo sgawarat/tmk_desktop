@@ -1,4 +1,0 @@
-[submodule "libs/tmk/tmk_core"]
-	path = libs/tmk/tmk_core
-	url = https://github.com/sgawarat/tmk_core.git
-	branch = msvc

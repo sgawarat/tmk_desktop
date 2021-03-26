@@ -1,22 +1,32 @@
 cmake_minimum_required(VERSION 3.18)
 project(tmk_desktop)
 
-find_package(fmt)
+set(TMK_CORE_DIR "" CACHE PATH "Path to the tmk_core directory")
+set(TMK_DESKTOP_KEYMAP_DIR "" CACHE PATH "Path to the keymap directory")
+
+if (NOT EXISTS ${TMK_CORE_DIR})
+    message(FATAL_ERROR "tmk_core directory '${TMK_CORE_DIR}' NOT FOUND")
+endif()
+
+if (NOT EXISTS ${TMK_DESKTOP_KEYMAP_DIR})
+    message(FATAL_ERROR "keymap directory '${TMK_DESKTOP_KEYMAP_DIR}' NOT FOUND")
+endif()
 
 add_library(config INTERFACE)
 target_precompile_headers(config INTERFACE
-    config.h
+    ./include/tmk_desktop/stable.h
+    ${TMK_DESKTOP_KEYMAP_DIR}/config.h
 )
 target_compile_options(config INTERFACE
     -Wall
     -Wextra
+    -Wno-unused-parameter
 )
 target_compile_features(config INTERFACE
     cxx_std_20
 )
 target_compile_definitions(config INTERFACE
     ACTIONMAP_ENABLE
-    NKRO_ENABLE
     NO_DEBUG
     NO_PRINT
 
@@ -25,16 +35,15 @@ target_compile_definitions(config INTERFACE
     NOMINMAX
     UNICODE
 
-    TMK_DESKTOP_ENABLE_LOGGING  # ロギングを有効化する
-    TMK_DESKTOP_FIX_WEAK_MODS  # アクションで定義される修飾キー入力が次のアクションに影響を与えないようにする
+    # アクションで定義される修飾キー入力が次のアクションに影響を与えないようにする
+    TMK_DESKTOP_FIX_WEAK_MODS
 )
 target_include_directories(config INTERFACE
+    ${TMK_CORE_DIR}
     ./include
 )
-target_link_libraries(config INTERFACE
-    fmt::fmt-header-only
-)
 
-add_subdirectory(libs)
 add_subdirectory(src)
-add_subdirectory(platform)
+add_subdirectory(${TMK_DESKTOP_KEYMAP_DIR})
+add_subdirectory(platforms)
+add_subdirectory(tools/key_test)
