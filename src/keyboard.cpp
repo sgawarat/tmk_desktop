@@ -28,22 +28,24 @@ extern "C" {
 
 namespace tmk_desktop {
 namespace {
-std::thread thread_{};  ///< スレッド
-std::atomic<bool> running_{false};  ///< スレッドが動作中かどうか
+std::thread thread_{};                     ///< スレッド
+std::atomic<bool> running_{false};         ///< スレッドが動作中かどうか
 std::atomic<bool> stop_requested_{false};  ///< スレッドに対する停止要求
 
-std::deque<KeyEvent> event_queue_;  ///< イベントキュー
-std::mutex event_queue_mtx_;  ///< イベントキューのためのMutex
+std::deque<KeyEvent> event_queue_;        ///< イベントキュー
+std::mutex event_queue_mtx_;              ///< イベントキューのためのMutex
 std::condition_variable event_queue_cv_;  ///< イベントキューのためのCV
 
 using Matrix = Bitset<MATRIX_ROWS * MATRIX_COLS, matrix_row_t>;
 static constexpr Key NO_REPEAT = Key{KEY_COUNT};  ///< キーリピートしていないことを示す値
 
-Matrix matrix_;   ///< キーボードの状態
+Matrix matrix_;               ///< キーボードの状態
 Key repeat_key_ = NO_REPEAT;  ///< リピートしているキー
 
 // Sinkにイベントを送信するホストドライバ関数たち
-uint8_t keyboard_leds() noexcept {return 0;}
+uint8_t keyboard_leds() noexcept {
+  return 0;
+}
 void send_keyboard(report_keyboard_t* report_ptr) noexcept {
   if (report_ptr) send_to_sink(*report_ptr);
 }
@@ -76,19 +78,19 @@ bool start_keyboard() {
 
   thread_ = std::thread([] {
     const struct ScopedRunning {
-      ScopedRunning() {running_.store(true, std::memory_order_release);}
-      ~ScopedRunning() {running_.store(false, std::memory_order_release);}
+      ScopedRunning() {
+        running_.store(true, std::memory_order_release);
+      }
+      ~ScopedRunning() {
+        running_.store(false, std::memory_order_release);
+      }
     } _running{};
 
     try {
       const struct ScopedInit {
         ScopedInit() {
           static host_driver_t driver{
-            keyboard_leds,
-            send_keyboard,
-            send_mouse,
-            send_system,
-            send_consumer,
+              keyboard_leds, send_keyboard, send_mouse, send_system, send_consumer,
           };
           host_set_driver(&driver);
           keyboard_init();
@@ -104,9 +106,7 @@ bool start_keyboard() {
         {
           std::unique_lock lock{event_queue_mtx_};
           if (event_queue_.empty()) {
-            event_queue_cv_.wait(lock, [] {
-              return !event_queue_.empty() || stop_requested_.load(std::memory_order_acquire);
-            });
+            event_queue_cv_.wait(lock, [] { return !event_queue_.empty() || stop_requested_.load(std::memory_order_acquire); });
             if (stop_requested_.load(std::memory_order_acquire)) break;
             if (event_queue_.empty()) continue;
           }

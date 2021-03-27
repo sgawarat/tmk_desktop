@@ -27,10 +27,7 @@ class KeyEvent final {
 public:
   KeyEvent() = default;
 
-  KeyEvent(const KBDLLHOOKSTRUCT& info) noexcept
-    : vk_(info.vkCode),
-      sc_(info.scanCode),
-      flags_(info.flags) {}
+  KeyEvent(const KBDLLHOOKSTRUCT& info) noexcept : vk_(info.vkCode), sc_(info.scanCode), flags_(info.flags) {}
 
   Key key() const noexcept {
     // HACK: 8ビットより大きなスキャンコードが現れないことを前提としている
@@ -52,12 +49,13 @@ private:
  */
 struct NativeSinkEvent : INPUT {
   constexpr explicit NativeSinkEvent(WORD sc, DWORD flags) noexcept
-    : INPUT{
-      .type = INPUT_KEYBOARD,
-      .ki = {
-        .wScan = sc,
-        .dwFlags = KEYEVENTF_SCANCODE | flags,
-      },
-    } {}
+      : INPUT{
+            .type = INPUT_KEYBOARD,
+            .ki =
+                {
+                    .wScan = sc,
+                    .dwFlags = KEYEVENTF_SCANCODE | flags,
+                },
+        } {}
 };
 }  // namespace tmk_desktop::inline win32

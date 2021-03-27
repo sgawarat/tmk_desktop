@@ -16,18 +16,18 @@
 
 namespace tmk_desktop {
 namespace {
-const WCHAR* const TITLE = L"TMK Desktop";  // アプリケーション名
+const WCHAR* const TITLE = L"TMK Desktop";                // アプリケーション名
 const WCHAR* const CLASS_NAME = L"TMK Desktop WNDCLASS";  // ウィンドウクラス名
-const WCHAR* const WINDOW_NAME = L"TMK Desktop WINDOW";  // ウィンドウ名
-constexpr UINT WM_APP_NOTIFY_ICON = WM_APP + 1;  // 通知アイコンのメッセージID
+const WCHAR* const WINDOW_NAME = L"TMK Desktop WINDOW";   // ウィンドウ名
+constexpr UINT WM_APP_NOTIFY_ICON = WM_APP + 1;           // 通知アイコンのメッセージID
 
 HMENU context_menu_ = NULL;  // コンテキストメニュー
 
-DWORD main_thread_id_ = 0;  ///< メインスレッドID
-std::exception_ptr main_ep_ = nullptr;  ///< メインスレッドで投げられた例外
-std::exception_ptr source_ep_ = nullptr;  ///< Sourceスレッドで投げられた例外
+DWORD main_thread_id_ = 0;                  ///< メインスレッドID
+std::exception_ptr main_ep_ = nullptr;      ///< メインスレッドで投げられた例外
+std::exception_ptr source_ep_ = nullptr;    ///< Sourceスレッドで投げられた例外
 std::exception_ptr keyboard_ep_ = nullptr;  ///< Keyboardスレッドで投げられた例外
-std::exception_ptr sink_ep_ = nullptr;  ///< Sinkスレッドで投げられた例外
+std::exception_ptr sink_ep_ = nullptr;      ///< Sinkスレッドで投げられた例外
 
 /**
  * @brief スコープ終わりに関数を呼び出すクラス
@@ -36,7 +36,10 @@ template <typename Dtor>
 class Scoped {
 public:
   Scoped(Dtor dtor) : dtor_(std::move(dtor)) {}
-  ~Scoped() {dtor_();}
+  ~Scoped() {
+    dtor_();
+  }
+
 private:
   Dtor dtor_;
 };
@@ -100,7 +103,8 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
       }
       return 0;
     }
-    default: return DefWindowProc(hwnd, msg, wparam, lparam);
+    default:
+      return DefWindowProc(hwnd, msg, wparam, lparam);
   }
 }
 }  // namespace
@@ -148,39 +152,39 @@ extern "C" int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int) {
     return RegisterClass(&wc);
   }();
   if (cls == 0) return EXIT_FAILURE;
-  const Scoped cls_dtor{[&] {UnregisterClass(MAKEINTATOM(cls), instance);}};
+  const Scoped cls_dtor{[&] { UnregisterClass(MAKEINTATOM(cls), instance); }};
 
   // ウィンドウ
   const HWND wnd = CreateWindow(MAKEINTATOM(cls), WINDOW_NAME, WS_OVERLAPPED, CW_USEDEFAULT, CW_USEDEFAULT, 1, 1, NULL, NULL, instance, 0);
   if (!wnd) return EXIT_FAILURE;
-  const Scoped wnd_dtor{[&] {DestroyWindow(wnd);}};
+  const Scoped wnd_dtor{[&] { DestroyWindow(wnd); }};
 
   // アイコン
   const HICON icon = LoadIcon(NULL, IDI_APPLICATION);
   if (!icon) return EXIT_FAILURE;
-  const Scoped icon_dtor{[&] {DestroyIcon(icon);}};
+  const Scoped icon_dtor{[&] { DestroyIcon(icon); }};
 
   // コンテキストメニュー
   const HMENU menu = LoadMenu(instance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
   if (!menu) return EXIT_FAILURE;
-  const Scoped menu_dtor{[&] {DestroyMenu(menu);}};
+  const Scoped menu_dtor{[&] { DestroyMenu(menu); }};
   if (!(context_menu_ = GetSubMenu(menu, 0))) return EXIT_FAILURE;
 
   // 通知アイコン
   if (!add_notify_icon(wnd, 0, WM_APP_NOTIFY_ICON, icon, TITLE)) return EXIT_FAILURE;
-  const Scoped notify_icon_dtor{[&] {remove_notify_icon(wnd, 0);}};
+  const Scoped notify_icon_dtor{[&] { remove_notify_icon(wnd, 0); }};
 
   // Sink
   start_sink();
-  const Scoped sink_dtor{[] {stop_sink();}};
+  const Scoped sink_dtor{[] { stop_sink(); }};
 
   // Keyboard
   start_keyboard();
-  const Scoped keyboard_dtor{[] {stop_keyboard();}};
+  const Scoped keyboard_dtor{[] { stop_keyboard(); }};
 
   // Source
   start_source();
-  const Scoped source_dtor{[] {stop_source();}};
+  const Scoped source_dtor{[] { stop_source(); }};
 
   // メッセージループ
   MSG msg{};

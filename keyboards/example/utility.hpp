@@ -6,8 +6,11 @@
  */
 #pragma once
 
+#include <cstdint>
+
 extern "C" {
 #include <common/keycode.h>
+#include <common/action.h>
 #include <common/action_util.h>
 #include <common/action_layer.h>
 }  // extern "C"
@@ -15,9 +18,9 @@ extern "C" {
 namespace tmk_desktop {
 /**
  * @brief 修飾キーの状態に応じてずらしたレイヤーをON/OFFする
- * 
+ *
  * Ctrl,Alt,Guiに別のレイヤーを用意したいときのShiftキーに用いる。
- * 
+ *
  * @param layer レイヤー番号
  * @param keycode 入力されるキー
  * @param pressed 押したか
@@ -36,9 +39,9 @@ inline void layer_on_off_offset(uint8_t layer, uint8_t keycode, bool pressed, si
 
 /**
  * @brief 修飾キーの状態に応じてレイヤーをずらす
- * 
+ *
  * Ctrl,Alt,Guiに別のレイヤーを用意したい場合に用いる。
- * 
+ *
  * @param keycode 入力されるキー
  * @param pressed 押したか
  * @param offset ずらす量
@@ -88,10 +91,10 @@ inline action_t set_right_mods(action_t action) noexcept {
 
 /**
  * @brief 親指キー用LAYER_TAP
- * 
+ *
  * 長押しで専用レイヤーをON/OFF、単打で指定レイヤーに切り替えてキー入力を行う。
  * 変換/無変換をIMEの有効/無効として使うときにIMEの状態に応じたレイヤーを用意したい場合に使う。
- * 
+ *
  * @param keycode 単打のときに入力されるキー
  * @param im_layer 単打のときに切り替わるレイヤー
  * @param thumb_layer 長押しのときにON/OFFされるレイヤー

@@ -5,13 +5,12 @@
  * @license This program is licensed under the GPLv2 or later. For more details, see LICENSE.
  */
 #include <array>
+#include <tmk_desktop/sink.hpp>
 #include "jp109.hpp"
 #include "utility.hpp"
 
-#include <tmk_desktop/sink.hpp>
-
 extern "C" {
-#include <common/action_macro.h>
+#include <common/action.h>
 }  // extern "C"
 
 namespace tmk_desktop {
@@ -19,42 +18,42 @@ using namespace jp109;
 
 // レイヤー番号
 enum Layer : uint8_t {
-  L_COLEMAK_P,  // Colemak (配置調整あり)
+  L_COLEMAK_P,         // Colemak (配置調整あり)
   L_LSHIFT_COLEMAK_P,  // 左シフト付きColemak (配置調整あり)
   L_RSHIFT_COLEMAK_P,  // 右シフト付きColemak (配置調整あり)
-  L_QWERTY,  // QWERTY (Ctrl,Alt,Gui用)
-  L_LSHIFT_QWERTY,  // 左シフト付きQWERTY (Ctrl,Alt,Gui用)
-  L_RSHIFT_QWERTY,  // 右シフト付きQWERTY (Ctrl,Alt,Gui用)
-  L_QWERTY_JP,  // QWERTY (日本語入力用)
+  L_QWERTY,            // QWERTY (Ctrl,Alt,Gui用)
+  L_LSHIFT_QWERTY,     // 左シフト付きQWERTY (Ctrl,Alt,Gui用)
+  L_RSHIFT_QWERTY,     // 右シフト付きQWERTY (Ctrl,Alt,Gui用)
+  L_QWERTY_JP,         // QWERTY (日本語入力用)
   L_LSHIFT_QWERTY_JP,  // 左シフト付きQWERTY (日本語入力用)
   L_RSHIFT_QWERTY_JP,  // 右シフト付きQWERTY (日本語入力用)
-  L_LTHUMB,  // 左親指
-  L_RTHUMB,  // 右親指
+  L_LTHUMB,            // 左親指
+  L_RTHUMB,            // 右親指
 };
 
 // マクロID
 enum MacroId {
   M_BLOCK_COMMENT_BEGIN,  // ブロックコメント / **
-  M_RIGHT_ARROW,  // 右矢印 ->
+  M_RIGHT_ARROW,          // 右矢印 ->
 };
 
 // 関数ID
 enum FuncId {
-  FN_LAYER_OFFSET_LCTRL,  // 修飾キーに基づくレイヤー調整 (左Ctrl用)
+  FN_LAYER_OFFSET_LCTRL,   // 修飾キーに基づくレイヤー調整 (左Ctrl用)
   FN_LAYER_OFFSET_LSHIFT,  // 修飾キーに基づくレイヤー調整 (左Shift用)
-  FN_LAYER_OFFSET_LALT,  // 修飾キーに基づくレイヤー調整 (左Alt用)
-  FN_LAYER_OFFSET_LGUI,  // 修飾キーに基づくレイヤー調整 (左Gui用)
-  FN_LAYER_OFFSET_RCTRL,  // 修飾キーに基づくレイヤー調整 (右Ctrl用)
+  FN_LAYER_OFFSET_LALT,    // 修飾キーに基づくレイヤー調整 (左Alt用)
+  FN_LAYER_OFFSET_LGUI,    // 修飾キーに基づくレイヤー調整 (左Gui用)
+  FN_LAYER_OFFSET_RCTRL,   // 修飾キーに基づくレイヤー調整 (右Ctrl用)
   FN_LAYER_OFFSET_RSHIFT,  // 修飾キーに基づくレイヤー調整 (右Shift用)
-  FN_LAYER_OFFSET_RALT,  // 修飾キーに基づくレイヤー調整 (右Alt用)
-  FN_LAYER_OFFSET_RGUI,  // 修飾キーに基づくレイヤー調整 (右Gui用)
-  FN_MICROPHONE_MUTE,  // マイクのオン/オフを切り替える
+  FN_LAYER_OFFSET_RALT,    // 修飾キーに基づくレイヤー調整 (右Alt用)
+  FN_LAYER_OFFSET_RGUI,    // 修飾キーに基づくレイヤー調整 (右Gui用)
+  FN_MICROPHONE_MUTE,      // マイクのオン/オフを切り替える
 };
 
 // 関数ID (TAP)
 enum FuncTapId {
   FN_TAP_LTHUMB_MUHENKAN,  // 長押しで左親指レイヤー、単打で無変換キー
-  FN_TAP_RTHUMB_HENKAN,  // 長押しで右親指レイヤー、単打で変換キー
+  FN_TAP_RTHUMB_HENKAN,    // 長押しで右親指レイヤー、単打で変換キー
 };
 
 // アクション
@@ -76,6 +75,7 @@ constexpr action_t AC_LAYER_ON_OFF_RSHIFT_QWERTY_JP = ACTION_LAYER_ON_OFF(L_RSHI
 
 extern "C" {
 action_t action_for_key(uint8_t layer, keypos_t pos) {
+  /* clang-format off */
   static constexpr std::array COLEMAK_P_ACTIONMAP{
     AC_GRAVE, AC_1, AC_2, AC_3, AC_4, AC_5, AC_6, AC_7, AC_8, AC_9, AC_0, AC_LBRACKET, AC_RBRACKET, AC_YEN,
     AC_Q, AC_W, AC_F, AC_P, AC_G, AC_J, AC_L, AC_U, AC_Y, AC_SCOLON, AC_QUOTE, AC_EQUAL,
@@ -158,6 +158,7 @@ action_t action_for_key(uint8_t layer, keypos_t pos) {
 
     AC_AUDIO_MUTE, AC_AUDIO_VOL_DOWN, AC_AUDIO_VOL_UP, AC_MICROPHONE_MUTE, AC_MEDIA_PREV_TRACK, AC_MEDIA_PLAY_PAUSE, AC_MEDIA_NEXT_TRACK,
   };
+  /* clang-format on */
 
   static constexpr size_t MAIN_ACTIONMAP_SIZE = COLEMAK_P_ACTIONMAP.size();
   static constexpr size_t OTHERS_ACTIONMAP_SIZE = OTHERS_ACTIONMAP.size();
@@ -167,21 +168,31 @@ action_t action_for_key(uint8_t layer, keypos_t pos) {
   const size_t index = pos.row * MATRIX_COLS + pos.col;
   if (index < MAIN_ACTIONMAP_END) {
     switch (layer) {
-      case L_COLEMAK_P: return COLEMAK_P_ACTIONMAP[index];
-      case L_LSHIFT_COLEMAK_P: return SHIFTED_COLEMAK_P_ACTIONMAP[index];
-      case L_RSHIFT_COLEMAK_P: return set_right_mods(SHIFTED_COLEMAK_P_ACTIONMAP[index]);
-      case L_QWERTY: return QWERTY_ACTIONMAP[index];
-      case L_LSHIFT_QWERTY: return SHIFTED_QWERTY_ACTIONMAP[index];
-      case L_RSHIFT_QWERTY: return set_right_mods(SHIFTED_QWERTY_ACTIONMAP[index]);
-      case L_QWERTY_JP: return QWERTY_JP_ACTIONMAP[index];
-      case L_LSHIFT_QWERTY_JP: return SHIFTED_QWERTY_JP_ACTIONMAP[index];
-      case L_RSHIFT_QWERTY_JP: return set_right_mods(SHIFTED_QWERTY_JP_ACTIONMAP[index]);
+      case L_COLEMAK_P:
+        return COLEMAK_P_ACTIONMAP[index];
+      case L_LSHIFT_COLEMAK_P:
+        return SHIFTED_COLEMAK_P_ACTIONMAP[index];
+      case L_RSHIFT_COLEMAK_P:
+        return set_right_mods(SHIFTED_COLEMAK_P_ACTIONMAP[index]);
+      case L_QWERTY:
+        return QWERTY_ACTIONMAP[index];
+      case L_LSHIFT_QWERTY:
+        return SHIFTED_QWERTY_ACTIONMAP[index];
+      case L_RSHIFT_QWERTY:
+        return set_right_mods(SHIFTED_QWERTY_ACTIONMAP[index]);
+      case L_QWERTY_JP:
+        return QWERTY_JP_ACTIONMAP[index];
+      case L_LSHIFT_QWERTY_JP:
+        return SHIFTED_QWERTY_JP_ACTIONMAP[index];
+      case L_RSHIFT_QWERTY_JP:
+        return set_right_mods(SHIFTED_QWERTY_JP_ACTIONMAP[index]);
       case L_LTHUMB:
       case L_RTHUMB:
         return THUMB_ACTIONMAP[index];
-      default: return ACTION_NO;
+      default:
+        return ACTION_NO;
     }
-  } if (index < OTHERS_ACTIONMAP_END) {
+  } else if (index < OTHERS_ACTIONMAP_END) {
     // シフトをそのまま適用するキーを個別に扱う
     const size_t i = index - MAIN_ACTIONMAP_END;
     switch (layer) {
@@ -202,18 +213,20 @@ action_t action_for_key(uint8_t layer, keypos_t pos) {
       case L_RSHIFT_QWERTY_JP:
         return add_mods(OTHERS_ACTIONMAP[i], MOD_RSFT);
 
-      default: return ACTION_NO;
+      default:
+        return ACTION_NO;
     }
-  } else {
-    return ACTION_NO;
   }
+  return ACTION_NO;
 }
 
 const macro_t* action_get_macro(keyrecord_t* record, uint8_t id, [[maybe_unused]] uint8_t opt) {
   if (record && record->event.pressed) {
     switch (id) {
-      case M_BLOCK_COMMENT_BEGIN: return MACRO(T(SLASH), SFT_(T(COLON), T(COLON)), END);
-      case M_RIGHT_ARROW: return MACRO(T(MINUS), SFT_(T(DOT)), END);
+      case M_BLOCK_COMMENT_BEGIN:
+        return MACRO(T(SLASH), SFT_(T(COLON), T(COLON)), END);
+      case M_RIGHT_ARROW:
+        return MACRO(T(MINUS), SFT_(T(DOT)), END);
     }
   }
   return nullptr;
@@ -281,7 +294,8 @@ void action_function(keyrecord_t* record, uint8_t id, uint8_t opt) {
 namespace tmk_desktop::inline win32 {
 using namespace jp109;
 
-const KeyToKeyposTable key_to_keypos_table = []{
+const KeyToKeyposTable key_to_keypos_table = [] {
+  /* clang-format off */
   const std::array KEYS{
     K_HANKAKU_ZENKAKU, K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_0, K_MINUS, K_CIRCUMFLEX, K_YEN,
     K_Q, K_W, K_E, K_R, K_T, K_Y, K_U, K_I, K_O, K_P, K_AT, K_LBRACKET,
@@ -307,6 +321,8 @@ const KeyToKeyposTable key_to_keypos_table = []{
     // Key{0x102}は自環境でのマイクミュートキーのコード
     K_AUDIO_MUTE, K_AUDIO_VOL_DOWN, K_AUDIO_VOL_UP, Key{0x102}, K_MEDIA_PREV_TRACK, K_MEDIA_PLAY_PAUSE, K_MEDIA_NEXT_TRACK,
   };
+  /* clang-format on */
+
   KeyToKeyposTable t{};
   std::fill(t.begin(), t.end(), keypos_t{0xff, 0xff});
   for (size_t i = 0; auto key : KEYS) {

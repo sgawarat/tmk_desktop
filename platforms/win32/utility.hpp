@@ -12,7 +12,7 @@
 namespace tmk_desktop::inline win32 {
 /**
  * @brief 通知領域にアイコンを登録する
- * 
+ *
  * @param wnd ウィンドウのハンドル
  * @param id 識別番号
  * @param callback_message ウィンドウプロシージャに送られるメッセージのID
@@ -23,13 +23,13 @@ namespace tmk_desktop::inline win32 {
  */
 inline bool add_notify_icon(HWND wnd, UINT id, UINT callback_message, HICON icon, LPCWSTR title = nullptr) noexcept {
   NOTIFYICONDATA nid{
-    .cbSize = sizeof(NOTIFYICONDATA),
-    .hWnd = wnd,
-    .uID = id,
-    .uFlags = (UINT)NIF_MESSAGE | NIF_SHOWTIP | (icon ? NIF_ICON : 0) | (title ? NIF_TIP : 0),
-    .uCallbackMessage = callback_message,
-    .hIcon = icon,
-    .szTip = {},
+      .cbSize = sizeof(NOTIFYICONDATA),
+      .hWnd = wnd,
+      .uID = id,
+      .uFlags = (UINT)NIF_MESSAGE | NIF_SHOWTIP | (icon ? NIF_ICON : 0) | (title ? NIF_TIP : 0),
+      .uCallbackMessage = callback_message,
+      .hIcon = icon,
+      .szTip = {},
   };
   if (title) lstrcpyn(nid.szTip, title, sizeof(nid.szTip) / sizeof(*nid.szTip));
 
@@ -64,27 +64,27 @@ inline bool add_notify_icon(HWND wnd, UINT id, UINT callback_message, HICON icon
 
 /**
  * @brief 通知領域からアイコンを取り除く
- * 
+ *
  * @param wnd ウィンドウのハンドル
  * @param id 識別番号
  */
 inline void remove_notify_icon(HWND wnd, UINT id) noexcept {
   NOTIFYICONDATA nid{
-    .cbSize = sizeof(NOTIFYICONDATA),
-    .hWnd = wnd,
-    .uID = id,
+      .cbSize = sizeof(NOTIFYICONDATA),
+      .hWnd = wnd,
+      .uID = id,
   };
   Shell_NotifyIcon(NIM_DELETE, &nid);
 }
 
 /**
  * @brief IMEの状態を取得する
- * 
+ *
  * かなり古い仕様を無理矢理に使っているので、今後とも上手く動いてくれるかは分からない。
  */
 inline bool get_im_status() noexcept {
   GUITHREADINFO gui_thread_info{
-    .cbSize = sizeof(GUITHREADINFO),
+      .cbSize = sizeof(GUITHREADINFO),
   };
   GetGUIThreadInfo(0, &gui_thread_info);
   const HWND hwnd = ImmGetDefaultIMEWnd(gui_thread_info.hwndFocus);

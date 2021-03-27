@@ -15,10 +15,10 @@
 
 namespace tmk_desktop {
 namespace {
-std::thread thread_;  ///< スレッド
-std::atomic<bool> running_{false};  ///< スレッドが動作中かどうか
+std::thread thread_;                       ///< スレッド
+std::atomic<bool> running_{false};         ///< スレッドが動作中かどうか
 std::atomic<bool> stop_requested_{false};  ///< スレッドに対する停止要求
-EventReceiver receiver_;  ///< OSから入力イベントを受け取るためのクラス
+EventReceiver receiver_;                   ///< OSから入力イベントを受け取るためのクラス
 }  // namespace
 
 bool start_source() {
@@ -29,14 +29,22 @@ bool start_source() {
 
   thread_ = std::thread([] {
     const struct ScopedRunning {
-      ScopedRunning() {running_.store(true, std::memory_order_release);}
-      ~ScopedRunning() {running_.store(false, std::memory_order_release);}
+      ScopedRunning() {
+        running_.store(true, std::memory_order_release);
+      }
+      ~ScopedRunning() {
+        running_.store(false, std::memory_order_release);
+      }
     } _running{};
 
     try {
       const struct ScopedInit {
-        ScopedInit() {receiver_.enable();}
-        ~ScopedInit() {receiver_.disable();}
+        ScopedInit() {
+          receiver_.enable();
+        }
+        ~ScopedInit() {
+          receiver_.disable();
+        }
       } _init{};
 
       while (!stop_requested_.load(std::memory_order_acquire)) {

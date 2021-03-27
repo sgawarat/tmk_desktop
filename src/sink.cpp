@@ -23,14 +23,14 @@ extern "C" {
 
 namespace tmk_desktop {
 namespace {
-std::thread thread_{};  ///< スレッド
-std::atomic<bool> running_{false};  ///< スレッドが動作中かどうか
+std::thread thread_{};                     ///< スレッド
+std::atomic<bool> running_{false};         ///< スレッドが動作中かどうか
 std::atomic<bool> stop_requested_{false};  ///< スレッドに対する停止要求
 
-std::deque<SinkEvent> event_queue_;  ///< イベントキュー
-std::mutex event_queue_mtx_;  ///< イベントキューのためのMutex
+std::deque<SinkEvent> event_queue_;       ///< イベントキュー
+std::mutex event_queue_mtx_;              ///< イベントキューのためのMutex
 std::condition_variable event_queue_cv_;  ///< イベントキューのためのCV
-EventSender sender_;  ///< OSに入力イベントを送るためのクラス
+EventSender sender_;                      ///< OSに入力イベントを送るためのクラス
 
 /**
  * @brief SinkEventのvisitor
@@ -42,12 +42,12 @@ public:
 
   void operator()(const report_keyboard_t& report) noexcept {
     // 前回のキー状態を保存する
-    const auto prev_keyset = keyset_;  // 前回のキー状態
+    const auto prev_keyset = keyset_;          // 前回のキー状態
     const auto prev_mod_keyset = mod_keyset_;  // 前回の修飾キー状態
 
     // 今回のキー状態を記録する
 #ifdef NKRO_ENABLE
-    keyset_ = Keyset{report.nkro.bits};  // 今回のキー状態
+    keyset_ = Keyset{report.nkro.bits};         // 今回のキー状態
     mod_keyset_ = ModKeyset{report.nkro.mods};  // 今回の修飾キー状態
 #else
     keyset_.clear();
@@ -59,10 +59,10 @@ public:
 #endif
 
     // 今回の更新で変化するキーを抽出する
-    const auto pressed_keyset = reset_to_set(prev_keyset, keyset_);  // 押した
-    const auto released_keyset = set_to_reset(prev_keyset, keyset_); // 離した
-    const auto pressed_mod_keyset = reset_to_set(prev_mod_keyset, mod_keyset_);  // 押した
-    const auto released_mod_keyset = set_to_reset(prev_mod_keyset, mod_keyset_); // 離した
+    const auto pressed_keyset = reset_to_set(prev_keyset, keyset_);               // 押した
+    const auto released_keyset = set_to_reset(prev_keyset, keyset_);              // 離した
+    const auto pressed_mod_keyset = reset_to_set(prev_mod_keyset, mod_keyset_);   // 押した
+    const auto released_mod_keyset = set_to_reset(prev_mod_keyset, mod_keyset_);  // 離した
 
     // キーイベントを送信する
     released_keyset.scan([](auto pos) {  // 非修飾キーを離す
@@ -88,32 +88,54 @@ public:
       switch (usage.page) {
         case HidUsagePage::GENERIC_DESKTOP_CONTROL:
           switch (usage.id) {
-            case SYSTEM_POWER_DOWN: return KC_SYSTEM_POWER;
-            case SYSTEM_SLEEP: return KC_SYSTEM_SLEEP;
-            case SYSTEM_WAKE_UP: return KC_SYSTEM_WAKE;
+            case SYSTEM_POWER_DOWN:
+              return KC_SYSTEM_POWER;
+            case SYSTEM_SLEEP:
+              return KC_SYSTEM_SLEEP;
+            case SYSTEM_WAKE_UP:
+              return KC_SYSTEM_WAKE;
           }
           break;
         case HidUsagePage::CONSUMER:
           switch (usage.id) {
-            case AUDIO_MUTE: return KC_AUDIO_MUTE;
-            case AUDIO_VOL_UP: return KC_AUDIO_VOL_UP;
-            case AUDIO_VOL_DOWN: return KC_AUDIO_VOL_DOWN;
-            case TRANSPORT_NEXT_TRACK: return KC_MEDIA_NEXT_TRACK;
-            case TRANSPORT_PREV_TRACK: return KC_MEDIA_PREV_TRACK;
-            case TRANSPORT_STOP: return KC_MEDIA_STOP;
-            case TRANSPORT_STOP_EJECT: return KC_MEDIA_EJECT;
-            case TRANSPORT_PLAY_PAUSE: return KC_MEDIA_PLAY_PAUSE;
-            case APPLAUNCH_CC_CONFIG: return KC_MEDIA_SELECT;
-            case APPLAUNCH_EMAIL: return KC_MAIL;
-            case APPLAUNCH_CALCULATOR: return KC_CALCULATOR;
-            case APPLAUNCH_LOCAL_BROWSER: return KC_MY_COMPUTER;
-            case APPCONTROL_SEARCH: return KC_WWW_SEARCH;
-            case APPCONTROL_HOME: return KC_WWW_HOME;
-            case APPCONTROL_BACK: return KC_WWW_BACK;
-            case APPCONTROL_FORWARD: return KC_WWW_FORWARD;
-            case APPCONTROL_STOP: return KC_WWW_STOP;
-            case APPCONTROL_REFRESH: return KC_WWW_REFRESH;
-            case APPCONTROL_BOOKMARKS: return KC_WWW_FAVORITES;
+            case AUDIO_MUTE:
+              return KC_AUDIO_MUTE;
+            case AUDIO_VOL_UP:
+              return KC_AUDIO_VOL_UP;
+            case AUDIO_VOL_DOWN:
+              return KC_AUDIO_VOL_DOWN;
+            case TRANSPORT_NEXT_TRACK:
+              return KC_MEDIA_NEXT_TRACK;
+            case TRANSPORT_PREV_TRACK:
+              return KC_MEDIA_PREV_TRACK;
+            case TRANSPORT_STOP:
+              return KC_MEDIA_STOP;
+            case TRANSPORT_STOP_EJECT:
+              return KC_MEDIA_EJECT;
+            case TRANSPORT_PLAY_PAUSE:
+              return KC_MEDIA_PLAY_PAUSE;
+            case APPLAUNCH_CC_CONFIG:
+              return KC_MEDIA_SELECT;
+            case APPLAUNCH_EMAIL:
+              return KC_MAIL;
+            case APPLAUNCH_CALCULATOR:
+              return KC_CALCULATOR;
+            case APPLAUNCH_LOCAL_BROWSER:
+              return KC_MY_COMPUTER;
+            case APPCONTROL_SEARCH:
+              return KC_WWW_SEARCH;
+            case APPCONTROL_HOME:
+              return KC_WWW_HOME;
+            case APPCONTROL_BACK:
+              return KC_WWW_BACK;
+            case APPCONTROL_FORWARD:
+              return KC_WWW_FORWARD;
+            case APPCONTROL_STOP:
+              return KC_WWW_STOP;
+            case APPCONTROL_REFRESH:
+              return KC_WWW_REFRESH;
+            case APPCONTROL_BOOKMARKS:
+              return KC_WWW_FAVORITES;
           }
           break;
       }
@@ -138,7 +160,7 @@ public:
   }
 
 private:
-  Keyset keyset_{};  ///< 最新のキー状態
+  Keyset keyset_{};         ///< 最新のキー状態
   ModKeyset mod_keyset_{};  ///< 最新の修飾キー状態
 } visitor_;
 }  // namespace
@@ -151,14 +173,22 @@ bool start_sink() {
 
   thread_ = std::thread([] {
     const struct ScopedRunning {
-      ScopedRunning() {running_.store(true, std::memory_order_release);}
-      ~ScopedRunning() {running_.store(false, std::memory_order_release);}
+      ScopedRunning() {
+        running_.store(true, std::memory_order_release);
+      }
+      ~ScopedRunning() {
+        running_.store(false, std::memory_order_release);
+      }
     } _running{};
 
     try {
       const struct ScopedInit {
-        ScopedInit() {sender_.enable();}
-        ~ScopedInit() {sender_.disable();}
+        ScopedInit() {
+          sender_.enable();
+        }
+        ~ScopedInit() {
+          sender_.disable();
+        }
       } _init{};
 
       while (!stop_requested_.load(std::memory_order_acquire)) {
@@ -166,9 +196,7 @@ bool start_sink() {
         {
           std::unique_lock lock{event_queue_mtx_};
           if (event_queue_.empty()) {
-            event_queue_cv_.wait(lock, [] {
-              return !event_queue_.empty() || stop_requested_.load(std::memory_order_acquire);
-            });
+            event_queue_cv_.wait(lock, [] { return !event_queue_.empty() || stop_requested_.load(std::memory_order_acquire); });
             if (stop_requested_.load(std::memory_order_acquire)) break;
             if (event_queue_.empty()) continue;
           }

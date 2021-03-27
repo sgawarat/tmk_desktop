@@ -5,7 +5,7 @@ extern "C" {
 
 /**
  * @brief アクションマップ
- * 
+ *
  * 既定ではaction_for_key()の中で参照される。
  */
 extern const action_t actionmaps[/* layers */][MATRIX_ROWS][MATRIX_COLS] = {};
@@ -29,9 +29,9 @@ const TappingKeyTable tapping_key_table{};
 
 /**
  * @brief キーコードからスキャンコードへの変換表
- * 
+ *
  * デフォルト値が用意されるが、独自の対応表が欲しければここで定義する。
  */
 // const KeycodeToScancodeTable keycode_to_scancode_table{};
-}  // namespace tmk_desktop::win32
+}  // namespace tmk_desktop::inline win32
 #endif

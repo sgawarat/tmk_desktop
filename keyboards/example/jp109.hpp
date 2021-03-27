@@ -14,11 +14,13 @@ extern "C" {
 }  // extern "C"
 
 #ifdef _WIN32
+
+/* clang-format off */
 /**
  * @brief 日本語配列にあるキー
- * 
+ *
  * (キー名, 対応するキーコード名, キーの値)
- * 
+ *
  * 基本的にはPS/2 Set1コードと等価だが、
  * - PauseキーがNumLockの値(45)に割り当てられる
  * - NumLockキーがExtendedキーになっている
@@ -140,13 +142,15 @@ extern "C" {
     m(LGUI, LGUI, 0x15b) \
     m(RGUI, RGUI, 0x15c) \
     m(APPLICATION, APPLICATION, 0x15d)
+/* clang-format on */
 #endif
 
 /**
  * @brief 日本語配列にあるキーのシフト変化
- * 
+ *
  * (キー名, シフトありで入力されるキー名)
  */
+/* clang-format off */
 #define TMK_DESKTOP_JP109_SHIFTED_KEYS(m) \
     m(1, EXCLAIM) \
     m(2, DQUOTE) \
@@ -169,21 +173,21 @@ extern "C" {
     m(DOT, GT) \
     m(SLASH, QUESTION) \
     m(BSLASH, UNDERSCORE)
+/* clang-format on */
 
 namespace tmk_desktop::jp109 {
 static constexpr action_t AC_NO = ACTION_NO;
 static constexpr action_t AC_TRANSPARENT = ACTION_TRANSPARENT;
 
 #define M(name, keycode, value) \
-    static constexpr Key K_##name = value; \
-    static constexpr auto KC_##name = ::KC_##keycode; \
-    static constexpr action_t AC_##name = ACTION_KEY(::KC_##keycode); \
-    static constexpr action_t AC_SHIFT_##name = ACTION_MODS_KEY(MOD_LSFT, ::KC_##keycode);
+  static constexpr Key K_##name = value; \
+  static constexpr auto KC_##name = ::KC_##keycode; \
+  static constexpr action_t AC_##name = ACTION_KEY(::KC_##keycode); \
+  static constexpr action_t AC_SHIFT_##name = ACTION_MODS_KEY(MOD_LSFT, ::KC_##keycode);
 TMK_DESKTOP_JP109_KEYS(M)
 #undef M
 
-#define M(name, shifted_name) \
-    static constexpr action_t AC_##shifted_name = ACTION_MODS_KEY(MOD_LSFT, KC_##name);
+#define M(name, shifted_name) static constexpr action_t AC_##shifted_name = ACTION_MODS_KEY(MOD_LSFT, KC_##name);
 TMK_DESKTOP_JP109_SHIFTED_KEYS(M)
 #undef M
 }  // namespace tmk_desktop::jp109

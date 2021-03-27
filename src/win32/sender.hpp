@@ -19,13 +19,14 @@ struct Input final : INPUT {
   constexpr Input() noexcept : INPUT{.type = INPUT_HARDWARE} {}
 
   explicit Input(uint8_t keycode, bool pressed = true) noexcept
-    : INPUT{
-        .type = INPUT_KEYBOARD,
-        .ki = {
-          .wScan = keycode_to_scancode(keycode),
-          .dwFlags = static_cast<DWORD>(KEYEVENTF_SCANCODE),
-        },
-      } {
+      : INPUT{
+            .type = INPUT_KEYBOARD,
+            .ki =
+                {
+                    .wScan = keycode_to_scancode(keycode),
+                    .dwFlags = static_cast<DWORD>(KEYEVENTF_SCANCODE),
+                },
+        } {
     if (ki.wScan > 0xff) ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;  // この関係性が本当に正しいかは不明
     if (!pressed) ki.dwFlags |= KEYEVENTF_KEYUP;
     add_injected(ki);
@@ -115,6 +116,6 @@ public:
 
 private:
   uint8_t latest_press_keycode_ = KC_NO;  ///< 最後に押したキー
-  Input latest_press_input_{};  ///< 最後に押したキーイベント
+  Input latest_press_input_{};            ///< 最後に押したキーイベント
 };
 }  // namespace tmk_desktop::inline win32

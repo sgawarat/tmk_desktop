@@ -36,7 +36,7 @@ public:
 
   /**
    * @brief イベントを受け取って処理する
-   * 
+   *
    * notify()を受けたり異常停止したりしない限りリターンされない。
    */
   void poll() noexcept {
@@ -54,7 +54,7 @@ public:
 private:
   /**
    * @brief フックプロシージャ
-   * 
+   *
    * @note フック処理にはミリ秒単位の制限時間が設けられているので、重たい処理はフックの外で行う。
    */
   static LRESULT CALLBACK hook_proc(int code, WPARAM wparam, LPARAM lparam) noexcept {
@@ -83,7 +83,7 @@ private:
     return CallNextHookEx(NULL, code, wparam, lparam);
   }
 
-  HHOOK hook_ = NULL;  ///< フックのハンドル
+  HHOOK hook_ = NULL;    ///< フックのハンドル
   DWORD thread_id_ = 0;  ///< スレッドID
 };
 }  // namespace tmk_desktop::inline win32

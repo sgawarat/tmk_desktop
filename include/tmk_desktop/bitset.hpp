@@ -13,7 +13,7 @@
 namespace tmk_desktop {
 /**
  * @brief ビットセット
- * 
+ *
  * @tparam N ビット数
  * @tparam ValueT ビット列を格納する値の型
  */
@@ -37,11 +37,9 @@ public:
   public:
     Position() = default;
 
-    constexpr Position(size_t index) noexcept
-      : index_(index) {}
+    constexpr Position(size_t index) noexcept : index_(index) {}
 
-    constexpr Position(size_t row, size_t col) noexcept
-      : index_(row * VALUE_WIDTH + col) {}
+    constexpr Position(size_t row, size_t col) noexcept : index_(row * VALUE_WIDTH + col) {}
 
     constexpr bool is_valid() const noexcept {
       return index_ < N;
@@ -70,7 +68,7 @@ public:
 
   /**
    * @brief 単一の値で全体を初期化する
-   * 
+   *
    * @param default_value 初期値
    */
   constexpr explicit Bitset(ValueT default_value) noexcept {
@@ -81,7 +79,7 @@ public:
 
   /**
    * @brief ビット列をコピーする
-   * 
+   *
    * @param values ビット列を格納する値の配列
    */
   constexpr explicit Bitset(std::span<const ValueT, VALUE_COUNT> values) noexcept {
@@ -92,15 +90,14 @@ public:
 
   /**
    * @brief ビット列をコピーする
-   * 
+   *
    * @param values ビット列を格納する値の配列
    */
-  constexpr explicit Bitset(const ValueT (&values)[VALUE_COUNT]) noexcept
-    : Bitset(std::span(values)) {}
+  constexpr explicit Bitset(const ValueT (&values)[VALUE_COUNT]) noexcept : Bitset(std::span(values)) {}
 
   /**
    * @brief ビット列を格納する数値列を取得する
-   * 
+   *
    * @return 値の配列
    */
   constexpr std::span<const ValueT, VALUE_COUNT> values() const noexcept {
@@ -109,7 +106,7 @@ public:
 
   /**
    * @brief ビット列を格納する数値を取得する
-   * 
+   *
    * @return 値の配列
    */
   constexpr ValueT value(size_t i) const noexcept {
@@ -119,12 +116,12 @@ public:
 
   /**
    * @brief ビットの状態を返す
-   * 
+   *
    * @param pos ビット列における位置
    * @retval true ビットが1
    * @retval false ビットが0。または、posが範囲外
    */
-  constexpr bool operator [](const Position& pos) const noexcept {
+  constexpr bool operator[](const Position& pos) const noexcept {
     if (!pos.is_valid()) return false;
     return !!(values_[pos.row()] & (static_cast<ValueT>(1) << pos.col()));
   }
@@ -138,7 +135,7 @@ public:
 
   /**
    * @brief ビットを更新する
-   * 
+   *
    * @param pos ビット列における位置
    * @param flag trueなら1、falseなら0
    */
@@ -152,7 +149,7 @@ public:
 
   /**
    * @brief ビットを1にする
-   * 
+   *
    * @param pos ビット列における位置
    */
   constexpr void set(const Position& pos) noexcept {
@@ -162,7 +159,7 @@ public:
 
   /**
    * @brief ビットを0にする
-   * 
+   *
    * @param pos ビット列における位置
    */
   constexpr void reset(const Position& pos) noexcept {
@@ -172,7 +169,7 @@ public:
 
   /**
    * @brief ビットを反転する
-   * 
+   *
    * @param pos ビット列における位置
    */
   constexpr void flip(const Position& pos) noexcept {
@@ -191,7 +188,7 @@ public:
 
   /**
    * @brief 1になっているビットを列挙する
-   * 
+   *
    * @param pred Positionを引数とする関数オブジェクト
    */
   template <typename Pred>
@@ -212,7 +209,7 @@ public:
 
   /**
    * @brief 二項演算を行う
-   * 
+   *
    * @param lhs 左辺のビットセット
    * @param rhs 右辺のビットセット
    * @param op ValueTの二項演算を行う関数オブジェクト
@@ -229,18 +226,18 @@ public:
 
   /**
    * @brief 1から0に変化するビットを抽出する
-   * 
+   *
    * @param prev 以前のビットセット
    * @param next 今回のビットセット
    * @return 1から0に変化したビットを1にしたビットセットを返す
    */
   friend constexpr Bitset set_to_reset(const Bitset& prev, const Bitset& next) noexcept {
-    return binary_op(prev, next, [] (auto lhs, auto rhs) {return lhs & ~rhs;});
+    return binary_op(prev, next, [](auto lhs, auto rhs) { return lhs & ~rhs; });
   }
 
   /**
    * @brief 0から1に変化するビットを抽出する
-   * 
+   *
    * @param prev 以前のビットセット
    * @param next 今回のビットセット
    * @return 0から1に変化したビットを1にしたビットセットを返す

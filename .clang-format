@@ -1,0 +1,11 @@
+BasedOnStyle: Google
+
+---
+Language: Cpp
+Standard: c++20
+ColumnLimit: 1200  # 0にすると行末空白を取り除かなくなったので、大きな値にしてある
+SortIncludes: false  # includeを並び替えない
+AccessModifierOffset: -2  # クラス内のアクセス修飾子のインデントを1つ下に合わせる
+AlignEscapedNewlines: DontAlign  # 行継続を示す\を整列させない
+AllowShortFunctionsOnASingleLine: Empty  # 中身のある関数を1行にしない
+---

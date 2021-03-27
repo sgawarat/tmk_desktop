@@ -11,6 +11,10 @@ extern "C" {
 #include <common/keycode.h>
 }  // extern "C"
 
+/* clang-format off */
+/**
+ * @brief キーコードに対応するPS/2 Set1のコード一覧
+ */
 #define TMK_DESKTOP_WIN32_PS2_SET1_SCANCODES(m) \
     m(ESCAPE, 0x0001) \
     m(1, 0x0002) \
@@ -165,17 +169,16 @@ extern "C" {
     m(MAIL, 0xe06c) \
     m(MEDIA_SELECT, 0xe06d) \
     m(PAUSE, 0xe11d)
-
-// 個別に使いたい場合があるかもしれないので、KC_POWERはKC_SYSTEM_POWERと区別しておく
-// m(POWER, 0xe05e)
+    // m(POWER, 0xe05e)
+/* clang-format on */
 
 namespace tmk_desktop::inline win32 {
 #ifndef TMK_DESKTOP_NOIMPL_KEYCODE_TO_SCANCODE_TABLE
-const KeycodeToScancodeTable keycode_to_scancode_table = []() constexpr -> auto {
+const KeycodeToScancodeTable keycode_to_scancode_table = []() {
   KeycodeToScancodeTable t{};
-  #define M(name, value) t[KC_##name] = value;
+#define M(name, value) t[KC_##name] = value;
   TMK_DESKTOP_WIN32_PS2_SET1_SCANCODES(M)
-  #undef M
+#undef M
   return t;
 }();
 #endif
