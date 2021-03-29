@@ -60,7 +60,6 @@ LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
         // 有効無効の切り替え
         case ID_ENABLE_DISABLE: {
           try {
-            throw std::exception("test");
             if (get_source_status() == SourceStatus::RESET) {
               start_sink();
               start_keyboard();
