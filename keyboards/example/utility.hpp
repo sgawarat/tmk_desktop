@@ -115,4 +115,24 @@ inline void layer_tap_thumb(const keyevent_t& event, const tap_t& tap, uint8_t k
     }
   }
 }
+
+/**
+ * @brief レイヤーをオンにしてキーを押す
+ * 
+ * 親指キーのLAYER_TAPを維持しながら日本語/英語のレイアウト調整を行うのに使う。
+ * 
+ * @param event キーイベント
+ * @param layer オンにするレイヤー番号
+ * @param mask 保護するレイヤーのビットマスク
+ * @param keycode 押すキーコード
+ */
+inline void layer_move_with_key(const keyevent_t& event, uint8_t layer, uint32_t mask, uint8_t keycode) noexcept {
+  if (event.pressed) {
+    layer_and(mask);
+    layer_on(layer);
+    register_code(keycode);
+  } else {
+    unregister_code(keycode);
+  }
+}
 }  // namespace tmk_desktop
