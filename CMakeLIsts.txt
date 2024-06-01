@@ -2,13 +2,22 @@ cmake_minimum_required(VERSION 3.18)
 project(tmk_desktop)
 
 set(TMK_CORE_DIR "" CACHE PATH "Path to the tmk_core directory")
+
+if(NOT IS_ABSOLUTE ${TMK_CORE_DIR})
+    set(TMK_CORE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${TMK_CORE_DIR}")
+endif()
+
 set(TMK_DESKTOP_KEYMAP_DIR "" CACHE PATH "Path to the keymap directory")
 
-if (NOT EXISTS ${TMK_CORE_DIR})
+if(NOT IS_ABSOLUTE ${TMK_DESKTOP_KEYMAP_DIR})
+    set(TMK_DESKTOP_KEYMAP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${TMK_DESKTOP_KEYMAP_DIR}")
+endif()
+
+if(NOT EXISTS ${TMK_CORE_DIR})
     message(FATAL_ERROR "tmk_core directory '${TMK_CORE_DIR}' NOT FOUND")
 endif()
 
-if (NOT EXISTS ${TMK_DESKTOP_KEYMAP_DIR})
+if(NOT EXISTS ${TMK_DESKTOP_KEYMAP_DIR})
     message(FATAL_ERROR "keymap directory '${TMK_DESKTOP_KEYMAP_DIR}' NOT FOUND")
 endif()
 
@@ -17,11 +26,21 @@ target_precompile_headers(config INTERFACE
     ./include/tmk_desktop/stable.h
     ${TMK_DESKTOP_KEYMAP_DIR}/config.h
 )
-target_compile_options(config INTERFACE
-    -Wall
-    -Wextra
-    -Wno-unused-parameter
-)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(config INTERFACE
+        /W3
+    )
+else()
+    target_compile_options(config INTERFACE
+        -Wall
+        -Wextra
+        -Wno-unused-parameter
+        -Wno-c++98-compat
+        -Wno-c++98-compat-pedantic
+    )
+endif()
+
 target_compile_features(config INTERFACE
     cxx_std_20
 )

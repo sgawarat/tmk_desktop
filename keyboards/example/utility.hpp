@@ -17,8 +17,30 @@ extern "C" {
 
 namespace tmk_desktop {
 /**
+ * @brief レイヤーをON/OFFする
+ *
+ * 押していることを示す仮のキー入力を発生させる。
+ *
+ * @param layer レイヤー番号
+ * @param keycode 入力されるキー
+ * @param pressed 押したか
+ */
+inline void layer_on_off(uint8_t layer, uint8_t keycode, bool pressed) noexcept {
+  if (pressed) {
+    add_pseudo_mods(MOD_BIT(keycode));
+    send_keyboard_report();
+    layer_on(layer);
+  } else {
+    del_pseudo_mods(MOD_BIT(keycode));
+    send_keyboard_report();
+    layer_off(layer);
+  }
+}
+
+/**
  * @brief 修飾キーの状態に応じてずらしたレイヤーをON/OFFする
  *
+ * 押していることを示す仮のキー入力を発生させる。
  * Ctrl,Alt,Guiに別のレイヤーを用意したいときのShiftキーに用いる。
  *
  * @param layer レイヤー番号
@@ -30,11 +52,7 @@ inline void layer_on_off_offset(uint8_t layer, uint8_t keycode, bool pressed, si
   // Ctrl,Alt,Guiのいずれかが押されていれば、レイヤー番号を調整する
   if ((get_mods() & 0xdd) != 0) layer += offset;
 
-  if (pressed) {
-    layer_on(layer);
-  } else {
-    layer_off(layer);
-  }
+  layer_on_off(layer, keycode, pressed);
 }
 
 /**
@@ -118,9 +136,9 @@ inline void layer_tap_thumb(const keyevent_t& event, const tap_t& tap, uint8_t k
 
 /**
  * @brief レイヤーをオンにしてキーを押す
- * 
+ *
  * 親指キーのLAYER_TAPを維持しながら日本語/英語のレイアウト調整を行うのに使う。
- * 
+ *
  * @param event キーイベント
  * @param layer オンにするレイヤー番号
  * @param mask 保護するレイヤーのビットマスク

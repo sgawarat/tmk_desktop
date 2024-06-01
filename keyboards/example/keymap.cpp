@@ -42,17 +42,19 @@ enum MacroId {
 
 // 関数ID
 enum FuncId {
-  FN_LAYER_OFFSET_LCTRL,   // 修飾キーに基づくレイヤー調整 (左Ctrl用)
-  FN_LAYER_OFFSET_LSHIFT,  // 修飾キーに基づくレイヤー調整 (左Shift用)
-  FN_LAYER_OFFSET_LALT,    // 修飾キーに基づくレイヤー調整 (左Alt用)
-  FN_LAYER_OFFSET_LGUI,    // 修飾キーに基づくレイヤー調整 (左Gui用)
-  FN_LAYER_OFFSET_RCTRL,   // 修飾キーに基づくレイヤー調整 (右Ctrl用)
-  FN_LAYER_OFFSET_RSHIFT,  // 修飾キーに基づくレイヤー調整 (右Shift用)
-  FN_LAYER_OFFSET_RALT,    // 修飾キーに基づくレイヤー調整 (右Alt用)
-  FN_LAYER_OFFSET_RGUI,    // 修飾キーに基づくレイヤー調整 (右Gui用)
-  FN_MICROPHONE_MUTE,      // マイクのオン/オフを切り替える
-  FN_LAYER_MOVE_HENKAN,    // レイヤー調整付き変換キー
-  FN_LAYER_MOVE_MUHENKAN,  // レイヤー調整付き無変換キー
+  FN_LAYER_OFFSET_LCTRL,      // 修飾キーに基づくレイヤー調整 (左Ctrl用)
+  FN_LAYER_OFFSET_LSHIFT,     // 修飾キーに基づくレイヤー調整 (左Shift用)
+  FN_LAYER_OFFSET_LALT,       // 修飾キーに基づくレイヤー調整 (左Alt用)
+  FN_LAYER_OFFSET_LGUI,       // 修飾キーに基づくレイヤー調整 (左Gui用)
+  FN_LAYER_OFFSET_RCTRL,      // 修飾キーに基づくレイヤー調整 (右Ctrl用)
+  FN_LAYER_OFFSET_RSHIFT,     // 修飾キーに基づくレイヤー調整 (右Shift用)
+  FN_LAYER_OFFSET_RALT,       // 修飾キーに基づくレイヤー調整 (右Alt用)
+  FN_LAYER_OFFSET_RGUI,       // 修飾キーに基づくレイヤー調整 (右Gui用)
+  FN_MICROPHONE_MUTE,         // マイクのオン/オフを切り替える
+  FN_LAYER_MOVE_HENKAN,       // レイヤー調整付き変換キー
+  FN_LAYER_MOVE_MUHENKAN,     // レイヤー調整付き無変換キー
+  FN_LAYER_ON_OFF_LSHIFT_JP,  // 修飾キーに基づくレイヤー調整 (JP時左Shift用)
+  FN_LAYER_ON_OFF_RSHIFT_JP,  // 修飾キーに基づくレイヤー調整 (JP時右Shift用)
 };
 
 // 関数ID (TAP)
@@ -79,8 +81,9 @@ constexpr action_t AC_LTHUMB_MUHENKAN = ACTION_FUNCTION_TAP(FN_TAP_LTHUMB_MUHENK
 constexpr action_t AC_RTHUMB_HENKAN = ACTION_FUNCTION_TAP(FN_TAP_RTHUMB_HENKAN);
 constexpr action_t AC_LAYER_TAP_LTHUMB_BSPACE = ACTION_LAYER_TAP(L_LTHUMB, KC_BSPACE);
 constexpr action_t AC_LAYER_TAP_RTHUMB_ENTER = ACTION_LAYER_TAP(L_RTHUMB, KC_ENTER);
-constexpr action_t AC_LAYER_ON_OFF_LSHIFT_QWERTY_JP = ACTION_LAYER_ON_OFF(L_LSHIFT_QWERTY_JP);
-constexpr action_t AC_LAYER_ON_OFF_RSHIFT_QWERTY_JP = ACTION_LAYER_ON_OFF(L_RSHIFT_QWERTY_JP);
+constexpr action_t AC_LAYER_ON_OFF_LSHIFT_QWERTY_JP = ACTION_FUNCTION(FN_LAYER_ON_OFF_LSHIFT_JP);
+constexpr action_t AC_LAYER_ON_OFF_RSHIFT_QWERTY_JP = ACTION_FUNCTION(FN_LAYER_ON_OFF_RSHIFT_JP);
+constexpr action_t AC_SHIFT_CAPS_LOCK = ACTION_MODS_KEY(MOD_LSFT, ::KC_CAPSLOCK);
 
 extern "C" {
 action_t action_for_key(uint8_t layer, keypos_t pos) {
@@ -151,7 +154,7 @@ action_t action_for_key(uint8_t layer, keypos_t pos) {
     AC_LBRACKET, AC_ASTERISK, AC_LBRACE, AC_LPAREN, AC_HASH, AC_DOLLAR, AC_RPAREN, AC_RBRACE, AC_AMPERSAND, AC_RBRACKET, AC_NO, AC_NO,
     AC_NO, AC_PERCENT, AC_EXCLAIM, AC_BSLASH, AC_NO, AC_NO, AC_AT, AC_CIRCUMFLEX, AC_RIGHT_ARROW, AC_BLOCK_COMMENT_BEGIN, AC_NO,
     // AC_LTHUMB_MUHENKAN, AC_RTHUMB_HENKAN,
-    AC_LAYER_TAP_LTHUMB_BSPACE, AC_LAYER_MOVE_HENKAN, AC_KATAKANA_HIRAGANA,
+    AC_LAYER_TAP_LTHUMB_BSPACE, AC_LAYER_MOVE_HENKAN, AC_SHIFT_CAPS_LOCK,
     AC_LCTRL, AC_LSHIFT, AC_LALT, AC_LGUI,
     AC_RCTRL, AC_RSHIFT, AC_RALT, AC_RGUI,
   };
@@ -301,7 +304,7 @@ void action_function(keyrecord_t* record, uint8_t id, uint8_t opt) {
         break;
       case FN_MICROPHONE_MUTE:
         if (event.pressed) {
-#ifdef _WIN32
+#ifdef WIN32
           // HACK: 自環境のマイクキーの入力を模倣している
           send_to_sink(NativeSinkEvent{0x2, KEYEVENTF_EXTENDEDKEY});
           send_to_sink(NativeSinkEvent{0x2, KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY});
@@ -314,6 +317,12 @@ void action_function(keyrecord_t* record, uint8_t id, uint8_t opt) {
         break;
       case FN_LAYER_MOVE_MUHENKAN:
         layer_move_with_key(event, L_COLEMAK_P, L_MASK_THUMBS, KC_MUHENKAN);
+        break;
+      case FN_LAYER_ON_OFF_LSHIFT_JP:
+        layer_on_off(L_LSHIFT_QWERTY_JP, KC_LSHIFT, event.pressed);
+        break;
+      case FN_LAYER_ON_OFF_RSHIFT_JP:
+        layer_on_off(L_RSHIFT_QWERTY_JP, KC_RSHIFT, event.pressed);
         break;
     }
   }
